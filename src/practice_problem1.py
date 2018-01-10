@@ -44,7 +44,7 @@ def main():
 #    run_test_double()
 #    run_test_shrink()
 #    run_test_double_then_shrink()
-#    run_test_reset()
+    run_test_reset()
 #    run_test_steal()
 #    run_test_get_history()
 #    run_test_combined_box()
@@ -106,7 +106,8 @@ class Box(object):
         self.volume = volume
         if len(self.contents) > self.volume:
             self.contents = ''
-        self.original = contents
+        self.original_contents = contents
+        self.original_volume = volume
         self.resets = []
 
     def append_string(self, additional_contents):
@@ -141,7 +142,7 @@ class Box(object):
           :type additional_contents: str
         """
         # --------------------------------------------------------------
-        # TODO: 3. Implement and test this function.
+        # DONE: 3. Implement and test this function.
         #     See the testing code (below) for more examples.
         # --------------------------------------------------------------
         # --------------------------------------------------------------
@@ -162,17 +163,18 @@ class Box(object):
         #       Read_this_ONLY_when_asked_Part_2.txt
         #    and continue working on the problem.
         # --------------------------------------------------------------
+        left_overs = ''
+        for k in range(self.volume - len(self.contents), len(additional_contents)):
+            left_overs = left_overs + additional_contents[k]
+
         for k in range(self.volume - len(self.contents)):
             if k > len(additional_contents) - 1:
                 self.contents = self.contents
             else:
                 self.contents = self.contents + additional_contents[k]
 
-        left_overs = ''
-        for k in range(self.volume - len(self.contents), len(additional_contents)):
-            left_overs = left_overs + additional_contents[k]
         return left_overs
-    
+
     def double(self):
         """
         What comes in:
@@ -257,7 +259,7 @@ class Box(object):
           :type new_volume: int
         """
         # --------------------------------------------------------------
-        # TODO: 5. Implement and test this function.
+        # DONE: 5. Implement and test this function.
         #     The testing code is already written for you (above).
         # --------------------------------------------------------------
         # --------------------------------------------------------------
@@ -268,21 +270,19 @@ class Box(object):
         # IMPORTANT: Write a solution to this problem in pseudo-code,
         # and THEN translate the pseudo-code to a solution.
         # --------------------------------------------------------------
-        new_self = ''
-        extra = ''
-        if self.contents != '':
-            for k in range(new_volume):
-                if new_volume > len(self.contents) - 1:
-                    new_self = new_self
-                else:
-                    new_self = new_self + self.contents[k]
+        new_string = ''
+        for k in range(new_volume):
+            if k < len(self.contents):
+                new_string = new_string + self.contents[k]
 
-            for k in range(new_volume, len(self.contents)):
-                extra = extra + self.contents[k]
+        left_overs = ''
+        for k in range(new_volume, len(self.contents)):
+            left_overs = left_overs + self.contents[k]
 
+        self.contents = new_string
         self.volume = new_volume
-        self.contents = new_self
-        return extra
+
+        return left_overs
 
     def double_then_shrink(self, new_volume):
         """
@@ -328,7 +328,7 @@ class Box(object):
           :type new_volume: int
         """
         # --------------------------------------------------------------
-        # TODO: 6. Implement and test this function.
+        # DONE: 6. Implement and test this function.
         #     The testing code is already written for you (above).
         # --------------------------------------------------------------
         # --------------------------------------------------------------
@@ -337,15 +337,9 @@ class Box(object):
         #    TIME ESTIMATE:   5 minutes.
         # --------------------------------------------------------------
         discarded_double = self.double()
+        total_double = len(discarded_double)
         discarded_shrink = self.shrink(new_volume)
-
-        total_double = 0
-        for k in range(len(discarded_double)):
-            total_double = total_double + (k + 1)
-
-        total_shrink = 0
-        for k in range(len(discarded_shrink)):
-            total_shrink = total_shrink + (k+1)
+        total_shrink = len(discarded_shrink)
 
         return total_double + total_shrink
 
@@ -367,8 +361,9 @@ class Box(object):
         #    DIFFICULTY:      4
         #    TIME ESTIMATE:   5 minutes.
         # --------------------------------------------------------------
-        self.resets = self.resets + self.contents
-        self.contents = self.original
+#        self.resets = self.resets + self.contents
+        self.contents = self.original_contents
+        self.volume = self.original_volume
 
     def steal(self, other_box):
         """
