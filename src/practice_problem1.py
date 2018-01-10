@@ -162,23 +162,17 @@ class Box(object):
         #       Read_this_ONLY_when_asked_Part_2.txt
         #    and continue working on the problem.
         # --------------------------------------------------------------
-        space = self.volume - len(self.contents)
-        number_of_characters_to_append = min(space,
-                                             len(additional_contents))
-        stuff_to_add = ''
-        for k in range(number_of_characters_to_append):
-            stuff_to_add = stuff_to_add + additional_contents[k]
-        self.contents = self.contents + stuff_to_add
+        for k in range(self.volume - len(self.contents)):
+            if k > len(additional_contents) - 1:
+                self.contents = self.contents
+            else:
+                self.contents = self.contents + additional_contents[k]
 
-        stuff_to_return = ''
-        for k in range(number_of_characters_to_append,
-                       len(additional_contents)):
-            stuff_to_return = stuff_to_return + additional_contents[k]
-
-        # Return the result from the previous loop:
-
-        return stuff_to_return
-
+        left_overs = ''
+        for k in range(self.volume - len(self.contents), len(additional_contents)):
+            left_overs = left_overs + additional_contents[k]
+        return left_overs
+    
     def double(self):
         """
         What comes in:
